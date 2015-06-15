@@ -1,0 +1,38 @@
+{
+  "listing_mask" : "http://realt.by/sale/flats/show/database/page/%d/?search=eJxlzsEKwyAMBuCnqedo52GHXcbeI7QaimCrRGXr21fb0sF2Cnx%2F8pMc3gs62%2Bkndfr10BKU4BDmdEodsgXyV1VTJcbivHXLhCsNXHnaaxQA%2FEX%2BjORNRHaGLrqD%2BKAd1oTB20v7iiaUJWN0JhemdNVLgYlyiRVS4IzjevwELdy7cVbfHSaDkRjjcJz3sAHaL0yC",
+  "queue_key" : 31337,
+  "logs" : {
+    "alerts" : "/var/www/realtor_alerts.log",
+    "result" : "/var/www/public/result.html"
+  },
+  "rules" : {
+    "min_photo_count" : 3,
+    "stop_words" : {
+      "parameters" : {
+        "примечания" : [
+          "без отделки",
+          "черновая отделка",
+          "под чистовую",
+          "под отделку",
+          "квартиры в новостройке"
+        ],
+        "ремонт" : [
+          "без отделки",
+          "строительная отделка"
+        ],
+        "полы" : "линолеум",
+        "район города" : [
+          "заводской район",
+          "лошица"
+        ]
+      },
+      "description" : [
+        "дом сдан",
+        "продажа квартир",
+        "цена от застройщика",
+        "без отделки",
+        "штукатурка стен"
+      ]
+    }
+  }
+}

@@ -1,0 +1,39 @@
+#!/usr/bin/env php
+<?php
+
+require __DIR__.'/../vendor/autoload.php';
+
+use Realtor\Console\Command;
+use Symfony\Component\Console\Application;
+use Noodlehaus\Config;
+use Pimple\Container;
+use Realtor\Module\RealtBy\Processor\AdvertCollector;
+use Realtor\Module\RealtBy\Processor\LinkCollector;
+
+$container = new Container();
+$container['config'] = function ($c) {
+	return new Config(__DIR__ . '/../config/main.json');
+};
+$container['rb_advert_collector'] = function ($c) {
+    return new AdvertCollector($c['config']);
+};
+$container['rb_link_collector'] = function ($c) {
+    return new LinkCollector($c['config']);
+};
+$container['grab_command'] = function ($c) {
+    $command = new Command\GrabUrl();
+    $command->addProcessor($c['rb_link_collector']);
+    return $command;
+};
+$container['queue_command'] = function ($c) {
+    $command = new Command\ProcessQueue();
+    $command->addProcessor($c['rb_link_collector']);
+    $command->addProcessor($c['rb_advert_collector']);
+    return $command;
+};
+
+$application = new Application();
+$application->add(new Command\GreetCommand());
+$application->add($container['grab_command']);
+$application->add($container['queue_command']);
+$application->run();

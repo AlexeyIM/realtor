@@ -1,0 +1,15 @@
+{
+  "autoload": {
+    "psr-4": {
+      "Realtor\\": "src/"
+    }
+  },
+  "require": {
+    "symfony/console": "~2.6",
+    "paquettg/php-html-parser": "~1.6",
+    "videlalvaro/php-amqplib": "~2.5",
+    "apix/log": "~1.0",
+    "hassankhan/config": "0.8.*",
+    "pimple/pimple": "~3.0"
+  }
+}
