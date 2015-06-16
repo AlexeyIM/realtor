@@ -1,6 +1,12 @@
 {
   "listing_mask" : "http://realt.by/sale/flats/show/database/page/%d/?search=eJxlzsEKwyAMBuCnqedo52GHXcbeI7QaimCrRGXr21fb0sF2Cnx%2F8pMc3gs62%2Bkndfr10BKU4BDmdEodsgXyV1VTJcbivHXLhCsNXHnaaxQA%2FEX%2BjORNRHaGLrqD%2BKAd1oTB20v7iiaUJWN0JhemdNVLgYlyiRVS4IzjevwELdy7cVbfHSaDkRjjcJz3sAHaL0yC",
-  "queue_key" : 31337,
+  "rabbitmq": {
+    "queue_key" : 31337,
+    "host"      : "localhost",
+    "port"      : 5672,
+    "login"     : "guest",
+    "password"  : "guest"
+  },
   "logs" : {
     "alerts" : "/var/www/realtor_alerts.log",
     "result" : "/var/www/public/result.html"

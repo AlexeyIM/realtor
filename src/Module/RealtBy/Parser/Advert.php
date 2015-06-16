@@ -15,7 +15,7 @@ class Advert implements IParser
     /**
      * @var array
      */
-    private $_rules = array();
+    private $rules = array();
 
     /**
      * Rules setter
@@ -24,7 +24,7 @@ class Advert implements IParser
      */
     public function setRules(array $rules)
     {
-        $this->_rules = $rules;
+        $this->rules = $rules;
     }
     /**
      * Returns true when all check were passed
@@ -40,26 +40,32 @@ class Advert implements IParser
 
         $description = $advertDom->find('#content .description');
         if ($description->count()) {
-            $this->_checkDescription($description[0]);
+            $this->checkDescription($description[0]);
         }
 
         $tables = $advertDom->find('table.object-view');
 
         if ($tables->count()) {
-            $this->_checkImageCount($tables[0]);
-            $this->_checkParameters($tables[1]);
+            $this->checkImageCount($tables[0]);
+            $this->checkParameters($tables[1]);
         }
 
         $title = $advertDom->find('title', 0);
         return $title ? $title->text : 'no title';
     }
 
-    protected function _checkDescription(HtmlNode $node)
+    /**
+     * Description checker
+     *
+     * @param HtmlNode $node
+     * @throws \Exception
+     */
+    protected function checkDescription(HtmlNode $node)
     {
-        $stopWords = $this->_rules['stop_words']['description'];
-        $description = $this->_strToLower(strip_tags($node->innerhtml));
+        $stopWords = $this->rules['stop_words']['description'];
+        $description = $this->strToLower(strip_tags($node->innerhtml));
 
-        if ($word = $this->_findWordsInString($description, $stopWords)) {
+        if ($word = $this->findWordsInString($description, $stopWords)) {
             $message = sprintf('"%s" stop word has been found in the description', $word);
             throw new \Exception($message);
         }
@@ -71,9 +77,9 @@ class Advert implements IParser
      * @param HtmlNode $node
      * @throws \Exception
      */
-    protected function _checkImageCount(HtmlNode $node)
+    protected function checkImageCount(HtmlNode $node)
     {
-        if ($node->find('#thumbs img')->count() < $this->_rules['min_photo_count']) {
+        if ($node->find('#thumbs img')->count() < $this->rules['min_photo_count']) {
             throw new \Exception('Not enough photos');
         }
     }
@@ -84,9 +90,9 @@ class Advert implements IParser
      * @param HtmlNode $node
      * @throws \Exception
      */
-    protected function _checkParameters(HtmlNode $node)
+    protected function checkParameters(HtmlNode $node)
     {
-        $stopWords = $this->_rules['stop_words']['parameters'];
+        $stopWords = $this->rules['stop_words']['parameters'];
 
         /** @var \PHPHtmlParser\Dom\HtmlNode $option */
         foreach ($node->find('tr') as $option) {
@@ -98,10 +104,10 @@ class Advert implements IParser
             }
 
             list($titleNode, $valueNode) = $suboptions->toArray();
-            $title = trim($this->_strToLower($titleNode->text));
-            $value = trim($this->_strToLower(strip_tags($valueNode->innerHtml)));
+            $title = trim($this->strToLower($titleNode->text));
+            $value = trim($this->strToLower(strip_tags($valueNode->innerHtml)));
             if (!empty($stopWords[$title])) {
-                if ($word = $this->_findWordsInString($value, $stopWords[$title])) {
+                if ($word = $this->findWordsInString($value, $stopWords[$title])) {
                     $message = sprintf('"%s" stop word has been found in "%s" field', $word, $title);
                     throw new \Exception($message);
                 }
@@ -117,7 +123,7 @@ class Advert implements IParser
      * @return string|false
      * @throws \Exception
      */
-    private function _findWordsInString($haystack, $needle)
+    private function findWordsInString($haystack, $needle)
     {
         $result = false;
 
@@ -145,7 +151,7 @@ class Advert implements IParser
      * @param string $input
      * @return string
      */
-    private function _strToLower($input)
+    private function strToLower($input)
     {
         $outputString = mb_convert_case($input, MB_CASE_LOWER, 'UTF-8') . '';
 

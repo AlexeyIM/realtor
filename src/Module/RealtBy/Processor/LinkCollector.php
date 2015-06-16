@@ -2,10 +2,11 @@
 
 namespace Realtor\Module\RealtBy\Processor;
 
+use Realtor\Advert\Link;
 use Symfony\Component\Console\Output\OutputInterface;
 use Realtor\Module\RealtBy\Parser\Breadcrumbs;
 use Realtor\Module\RealtBy\Parser\Listing;
-use Realtor\Queue\Storage as Queue;
+use Realtor\Console\Processor\AbstractProcessor;
 
 /**
  * Class LinkCollector
@@ -23,7 +24,7 @@ class LinkCollector extends AbstractProcessor
      */
     public function process(OutputInterface $output)
     {
-        $listingUrl = preg_replace('/(\%\d)/', '%$1', $this->_getConfig('listing_mask'));
+        $listingUrl = preg_replace('/(\%\d)/', '%$1', $this->getConfig('listing_mask'));
 
         $breadcrumbParser = new Breadcrumbs();
         $pageCount = $breadcrumbParser->parsePage(sprintf($listingUrl, 1));
@@ -38,10 +39,9 @@ class LinkCollector extends AbstractProcessor
         }
 
         $output->writeln('Adding links to queue');
-        $queue_id = $this->_getConfig('queue_key');
-        $queue = new Queue($queue_id);
         foreach ($links as $link) {
-            $queue->enqueue($link);
+            $link = new Link($link, Link::SOURCE_REALT);
+            $this->queue->enqueue($link);
         }
 
         return count($links);

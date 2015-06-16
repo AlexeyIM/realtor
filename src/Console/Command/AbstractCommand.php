@@ -1,7 +1,7 @@
 <?php
 namespace Realtor\Console\Command;
 
-use Realtor\Console\Processor\IProcessor;
+use Realtor\Console\Processor\ProcessorInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -13,16 +13,16 @@ abstract class AbstractCommand extends Command
     /**
      * @var array
      */
-    protected $_processors = array();
+    protected $processors = array();
 
     /**
      * Process setter
      *
-     * @param IProcessor $processor
+     * @param ProcessorInterface $processor
      */
-    public function addProcessor(IProcessor $processor)
+    public function addProcessor(ProcessorInterface $processor)
     {
-        $this->_processors[] = $processor;
+        $this->processors[] = $processor;
     }
 
     /**
@@ -32,8 +32,8 @@ abstract class AbstractCommand extends Command
      */
     protected function process(OutputInterface $output)
     {
-        /** @var IProcessor $processor */
-        foreach ($this->_processors as $processor) {
+        /** @var ProcessorInterface $processor */
+        foreach ($this->processors as $processor) {
             $className = get_class($processor);
 
             $output->writeln(sprintf(self::NOTION_PROCESSOR_STARTED, $className));

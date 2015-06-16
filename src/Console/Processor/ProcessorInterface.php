@@ -8,7 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Interface IProcessor
  * @package Realtor\Processor
  */
-interface IProcessor
+interface ProcessorInterface
 {
     /**
      * @param OutputInterface $output
