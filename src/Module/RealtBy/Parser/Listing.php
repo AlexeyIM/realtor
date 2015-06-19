@@ -2,14 +2,14 @@
 
 namespace Realtor\Module\RealtBy\Parser;
 
-use Realtor\Parser\IParser;
+use Realtor\Parser\ParserInsterface;
 use PHPHtmlParser\Dom;
 
 /**
  * Class Listing
  * @package Realtor\Module\RealtBy\Parser
  */
-class Listing implements IParser
+class Listing implements ParserInsterface
 {
     /**
      * Returns number of pages based on paginator page element

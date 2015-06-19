@@ -2,8 +2,8 @@
 
 namespace Realtor\Module\RealtBy\Processor;
 
-use Realtor\Advert\Link;
 use Symfony\Component\Console\Output\OutputInterface;
+use Realtor\Advert\Link;
 use Realtor\Module\RealtBy\Parser\Breadcrumbs;
 use Realtor\Module\RealtBy\Parser\Listing;
 use Realtor\Console\Processor\AbstractProcessor;
@@ -24,7 +24,13 @@ class LinkCollector extends AbstractProcessor
      */
     public function process(OutputInterface $output)
     {
-        $listingUrl = preg_replace('/(\%\d)/', '%$1', $this->getConfig('listing_mask'));
+        $config = $this->getConfig('modules');
+
+        if (!isset($config['realtby']['listing_mask'])) {
+            throw new \Exception('RealtBy module config was not found');
+        }
+
+        $listingUrl = preg_replace('/(\%\d)/', '%$1', $config['realtby']['listing_mask']);
 
         $breadcrumbParser = new Breadcrumbs();
         $pageCount = $breadcrumbParser->parsePage(sprintf($listingUrl, 1));

@@ -3,7 +3,7 @@
 namespace Realtor\Console\Processor;
 
 use Symfony\Component\Console\Output\OutputInterface;
-use Realtor\Module\RealtBy\Parser\Advert;
+use Realtor\Parser\Factory as ParserFactory;
 use Realtor\Advert\Link;
 use Apix\Log\Logger;
 use PhpAmqpLib\Message\AMQPMessage;
@@ -46,12 +46,13 @@ class QueueWorker extends AbstractProcessor
         $errorLog = new Logger\File($logsPath['alerts']);
         $resultLog = new Logger\File($logsPath['result']);
 
-        $advertParser = new Advert();
+        $advertSource = $link->getSource();
+        $advertParser = ParserFactory::createAdvertParser($advertSource);
         $advertParser->setRules($this->getConfig('rules'));
 
         try {
-            if ($title = $advertParser->parsePage($link->getUrl())) {
-                $resultLog->info('<a href="' . $link->getUrl() . '">' . $title . '</a><br>');
+            if ($advert = $advertParser->parsePage($link->getUrl())) {
+                $resultLog->info('<a href="' . $link->getUrl() . '">' . $advert->getTitle() . '</a><br>');
             }
             $line = sprintf('<info>passed</info>', $link->getUrl());
             $this->output->writeln($line);

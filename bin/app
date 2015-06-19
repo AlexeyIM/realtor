@@ -7,13 +7,14 @@ use Realtor\Console\Command;
 use Symfony\Component\Console\Application;
 use Noodlehaus\Config;
 use Pimple\Container;
-use Realtor\Module\RealtBy\Processor\LinkCollector;
+use Realtor\Module\RealtBy\Processor\LinkCollector as RealtByLinks;
+use Realtor\Module\Onliner\Processor\LinkCollector as OnlinerLinks;
 use Realtor\Console\Processor\QueueWorker;
 use Realtor\Queue\Storage\RabbitMQ;
 
 $container = new Container();
 $container['config'] = function ($c) {
-	return new Config(__DIR__ . '/../config/main.json');
+    return new Config(__DIR__ . '/../config/main.json');
 };
 $container['queue'] = function ($c) {
     return new RabbitMQ($c['config']->get('rabbitmq'));
@@ -22,11 +23,15 @@ $container['queue_worker'] = function ($c) {
     return new QueueWorker($c['config'], $c['queue']);
 };
 $container['rb_link_collector'] = function ($c) {
-    return new LinkCollector($c['config'], $c['queue']);
+    return new RealtByLinks($c['config'], $c['queue']);
+};
+$container['ol_link_collector'] = function ($c) {
+    return new OnlinerLinks($c['config'], $c['queue']);
 };
 $container['grab_command'] = function ($c) {
     $command = new Command\GrabUrl();
     $command->addProcessor($c['rb_link_collector']);
+    $command->addProcessor($c['ol_link_collector']);
     return $command;
 };
 $container['queue_command'] = function ($c) {

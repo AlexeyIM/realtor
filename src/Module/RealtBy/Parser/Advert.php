@@ -2,15 +2,16 @@
 
 namespace Realtor\Module\RealtBy\Parser;
 
-use Realtor\Parser\IParser;
 use PHPHtmlParser\Dom;
 use PHPHtmlParser\Dom\HtmlNode;
+use Realtor\Parser\AdvertParserInterface;
+use Realtor\Advert\Advert as AdvertObject;
 
 /**
  * Class Advert
  * @package Realtor\Module\RealtBy\Parser
  */
-class Advert implements IParser
+class Advert implements AdvertParserInterface
 {
     /**
      * @var array
@@ -21,16 +22,18 @@ class Advert implements IParser
      * Rules setter
      *
      * @param array $rules
+     * @return null
      */
     public function setRules(array $rules)
     {
         $this->rules = $rules;
     }
+
     /**
-     * Returns true when all check were passed
+     * Returns Advert object when all check were passed
      *
      * @param string $url
-     * @return string
+     * @return Advert
      * @throws \Exception
      */
     public function parsePage($url)
@@ -50,8 +53,12 @@ class Advert implements IParser
             $this->checkParameters($tables[1]);
         }
 
-        $title = $advertDom->find('title', 0);
-        return $title ? $title->text : 'no title';
+        $titleOblect = $advertDom->find('title', 0);
+        $title = $titleOblect ? $titleOblect->text : 'no title';
+
+        $advert = new AdvertObject();
+        $advert->setTitle($title);
+        return $advert;
     }
 
     /**
@@ -96,7 +103,6 @@ class Advert implements IParser
 
         /** @var \PHPHtmlParser\Dom\HtmlNode $option */
         foreach ($node->find('tr') as $option) {
-
             /** @var \PHPHtmlParser\Dom\Collection $suboptions */
             $suboptions = $option->find('td');
             if (!$suboptions->count()) {

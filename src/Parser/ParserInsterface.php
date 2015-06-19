@@ -3,10 +3,10 @@
 namespace Realtor\Parser;
 
 /**
- * Interface IParser
+ * Interface ParserInsterface
  * @package Realtor\Parser
  */
-interface IParser
+interface ParserInsterface
 {
     public function parsePage($url);
 }

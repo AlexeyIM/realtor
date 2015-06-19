@@ -1,5 +1,12 @@
 {
-  "listing_mask" : "http://realt.by/sale/flats/show/database/page/%d/?search=eJxlzsEKwyAMBuCnqedo52GHXcbeI7QaimCrRGXr21fb0sF2Cnx%2F8pMc3gs62%2Bkndfr10BKU4BDmdEodsgXyV1VTJcbivHXLhCsNXHnaaxQA%2FEX%2BjORNRHaGLrqD%2BKAd1oTB20v7iiaUJWN0JhemdNVLgYlyiRVS4IzjevwELdy7cVbfHSaDkRjjcJz3sAHaL0yC",
+  "modules" : {
+    "realtby" : {
+      "listing_mask" : "http://realt.by/sale/flats/show/database/page/%d/?search=eJxlzsEKwyAMBuCnqedo52GHXcbeI7QaimCrRGXr21fb0sF2Cnx%2F8pMc3gs62%2Bkndfr10BKU4BDmdEodsgXyV1VTJcbivHXLhCsNXHnaaxQA%2FEX%2BjORNRHaGLrqD%2BKAd1oTB20v7iiaUJWN0JhemdNVLgYlyiRVS4IzjevwELdy7cVbfHSaDkRjjcJz3sAHaL0yC"
+    },
+    "onliner" : {
+      "listing_mask" : "https://pk.api.onliner.by/search/apartments?number_of_rooms[]=1&number_of_rooms[]=2&price[min]=10000&price[max]=90000&currency=usd&bounds[lb][lat]=53.77103665374234&bounds[lb][long]=27.321624755859375&bounds[rt][lat]=54.02471335178857&bounds[rt][long]=27.802276611328125&page=%d"
+    }
+  },
   "rabbitmq": {
     "queue_key" : 31337,
     "host"      : "localhost",
@@ -13,6 +20,7 @@
   },
   "rules" : {
     "min_photo_count" : 3,
+    "min_year" : 2000,
     "stop_words" : {
       "parameters" : {
         "примечания" : [
