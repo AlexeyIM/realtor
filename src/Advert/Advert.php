@@ -19,6 +19,11 @@ class Advert
     private $price;
 
     /**
+     * @var int
+     */
+    private $pricePerMeter;
+
+    /**
      * Title getter
      *
      * @return string
@@ -38,5 +43,27 @@ class Advert
     {
         $this->title = $title;
         return $this;
+    }
+
+    /**
+     * Price per meter setter
+     *
+     * @param int $price
+     * @return $this
+     */
+    public function setPricePerMeter($price)
+    {
+        $this->pricePerMeter = $price;
+        return $this;
+    }
+
+    /**
+     * Price per meter getter
+     *
+     * @return int
+     */
+    public function getPricePerMeter()
+    {
+        return $this->pricePerMeter;
     }
 }

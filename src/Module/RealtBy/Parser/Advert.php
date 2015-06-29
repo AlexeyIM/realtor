@@ -61,9 +61,29 @@ class Advert implements AdvertParserInterface
         $titleOblect = $advertDom->find('title', 0);
         $title = $titleOblect ? $titleOblect->text : 'no title';
 
+        $content = $advertDom->find('#content', 0);
+        $pricePerMeter = $this->parsePricePerMeter($content);
+
         $advert = new AdvertObject();
-        $advert->setTitle($title);
+        $advert->setTitle($title)
+            ->setPricePerMeter($pricePerMeter);
         return $advert;
+    }
+
+    /**
+     * Returns int price value
+     *
+     * @param HtmlNode $node
+     * @return int
+     */
+    protected function parsePricePerMeter(HtmlNode $node)
+    {
+        $text = String::strToLower(strip_tags($node->innerhtml));
+        $text = str_replace('&nbsp;', ' ', $text);
+        preg_match('/, ([\d\s]+) \$ за м/u', $text, $matches);
+        $pricePerMeter = isset($matches[1]) ? str_replace(' ', '', $matches[1]) : 0;
+
+        return $pricePerMeter;
     }
 
     /**
@@ -74,7 +94,7 @@ class Advert implements AdvertParserInterface
      */
     protected function checkDescription(HtmlNode $node)
     {
-        $stopWords = $this->rules['stop_words']['description'];
+        $stopWords = $this->rules['stop_words'];
         $description = String::strToLower(strip_tags($node->innerhtml));
 
         if ($word = String::findWordsInString($description, $stopWords)) {
@@ -106,7 +126,7 @@ class Advert implements AdvertParserInterface
      */
     protected function checkParameters(HtmlNode $node)
     {
-        $stopWords = $this->rules['stop_words']['parameters'];
+        $stopWords = $this->rules['realtby']['parameters_stop_words'];
 
         /** @var \PHPHtmlParser\Dom\HtmlNode $option */
         foreach ($node->find('tr') as $option) {

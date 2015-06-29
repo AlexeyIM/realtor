@@ -7,6 +7,7 @@ use Realtor\Parser\Factory as ParserFactory;
 use Realtor\Advert\Link;
 use Apix\Log\Logger;
 use PhpAmqpLib\Message\AMQPMessage;
+use Realtor\Advert\Advert;
 
 /**
  * Class QueueWorker
@@ -14,6 +15,8 @@ use PhpAmqpLib\Message\AMQPMessage;
  */
 class QueueWorker extends AbstractProcessor
 {
+    const ADVERT_RESULT_LINE = '<a href="%s">%s</a> %d$ за м<sup>2</sup><br>';
+
     /**
      * @var OutputInterface
      */
@@ -55,8 +58,15 @@ class QueueWorker extends AbstractProcessor
         $advertParser->setRules($this->getConfig('rules'));
 
         try {
+            /** @var Advert $advert */
             if ($advert = $advertParser->parsePage($link->getUrl())) {
-                $resultLog->info('<a href="' . $link->getUrl() . '">' . $advert->getTitle() . '</a><br>');
+                $result = sprintf(
+                    self::ADVERT_RESULT_LINE,
+                    $link->getUrl(),
+                    $advert->getTitle(),
+                    $advert->getPricePerMeter()
+                );
+                $resultLog->info($result);
             }
             $line = sprintf('<info>passed</info>', $link->getUrl());
             $this->output->writeln($line);
