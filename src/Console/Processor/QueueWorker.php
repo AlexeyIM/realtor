@@ -30,6 +30,10 @@ class QueueWorker extends AbstractProcessor
     public function process(OutputInterface $output)
     {
         $this->output = $output;
+
+        $logsPath = $this->getConfig('logs');
+        $this->writeResultHeader($logsPath['result']);
+
         $this->queue->listen(array($this, 'parseAdvertPage'));
     }
 
@@ -61,5 +65,17 @@ class QueueWorker extends AbstractProcessor
             $this->output->writeln($line);
             $errorLog->info(strip_tags($line));
         }
+    }
+
+    /**
+     * Writes first line to determine file encoding
+     *
+     * @param string $path
+     */
+    protected function writeResultHeader($path)
+    {
+        $file = fopen($path, 'w');
+        fwrite($file, '<head><meta charset="UTF-8"></head>');
+        fclose($file);
     }
 }

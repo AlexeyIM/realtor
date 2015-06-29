@@ -49,9 +49,13 @@ class Advert implements AdvertParserInterface
 
         $tables = $advertDom->find('table.object-view');
 
-        if ($tables->count()) {
-            $this->checkImageCount($tables[0]);
-            $this->checkParameters($tables[1]);
+        foreach ($tables as $table) {
+            $this->checkParameters($table);
+        }
+
+        $thumbs = $advertDom->find('table.object-view #thumbs');
+        if ($thumbs->count()) {
+            $this->checkImageCount($thumbs[0]);
         }
 
         $titleOblect = $advertDom->find('title', 0);
@@ -87,7 +91,7 @@ class Advert implements AdvertParserInterface
      */
     protected function checkImageCount(HtmlNode $node)
     {
-        $count = $node->find('#thumbs img')->count();
+        $count = $node->find('img')->count();
         if ($count < $this->rules['realtby']['min_photo_count']) {
             $message = sprintf(self::ERROR_NOT_ENOUGH_PHOTOS, $count);
             throw new \Exception($message);
