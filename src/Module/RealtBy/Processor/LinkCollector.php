@@ -14,6 +14,8 @@ use Realtor\Console\Processor\AbstractProcessor;
  */
 class LinkCollector extends AbstractProcessor
 {
+    const CANT_FIND_CONFIG = 'RealtBy module config was not found';
+
     /**
      * Processing function
      *
@@ -27,7 +29,7 @@ class LinkCollector extends AbstractProcessor
         $config = $this->getConfig('modules');
 
         if (!isset($config['realtby']['listing_mask'])) {
-            throw new \Exception('RealtBy module config was not found');
+            throw new \Exception(self::CANT_FIND_CONFIG);
         }
 
         $listingUrl = preg_replace('/(\%\d)/', '%$1', $config['realtby']['listing_mask']);

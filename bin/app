@@ -41,7 +41,6 @@ $container['queue_command'] = function ($c) {
 };
 
 $application = new Application();
-$application->add(new Command\GreetCommand());
 $application->add($container['grab_command']);
 $application->add($container['queue_command']);
 $application->run();

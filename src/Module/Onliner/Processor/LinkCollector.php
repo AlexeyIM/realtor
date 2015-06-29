@@ -13,6 +13,8 @@ use Realtor\Console\Processor\AbstractProcessor;
  */
 class LinkCollector extends AbstractProcessor
 {
+    const CANT_FIND_CONFIG = 'Onliner module config was not found';
+
     /**
      * @param OutputInterface $output
      * @throws \Exception
@@ -22,7 +24,7 @@ class LinkCollector extends AbstractProcessor
         $config = $this->getConfig('modules');
 
         if (!isset($config['onliner']['listing_mask'])) {
-            throw new \Exception('Onliner module config was not found');
+            throw new \Exception(self::CANT_FIND_CONFIG);
         }
 
         $output->writeln('Looking for links');

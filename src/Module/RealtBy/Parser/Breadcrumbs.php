@@ -11,6 +11,8 @@ use PHPHtmlParser\Dom;
  */
 class Breadcrumbs implements ParserInsterface
 {
+    const ERROR_CANT_FIND_BREADCRUMBS = 'Can\'t find breadcrumbs element on the page';
+
     /**
      * Returns number of pages based on paginator page element
      *
@@ -29,7 +31,7 @@ class Breadcrumbs implements ParserInsterface
         $numberOfPages = $pageLinks->offsetGet($pageLinks->count() - 1)->text;
 
         if ($numberOfPages <= 0) {
-            throw new \Exception('Can\'t find breadcrumbs element on the page');
+            throw new \Exception(self::ERROR_CANT_FIND_BREADCRUMBS);
         }
 
         return $numberOfPages;

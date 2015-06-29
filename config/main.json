@@ -19,7 +19,12 @@
     "result" : "/var/www/public/result.html"
   },
   "rules" : {
-    "min_photo_count" : 3,
+    "realtby" : {
+      "min_photo_count" : 3
+    },
+    "onliner" : {
+      "min_photo_count" : 2
+    },
     "min_year" : 2000,
     "stop_words" : {
       "parameters" : {
@@ -38,7 +43,8 @@
         "район города" : [
           "заводской район",
           "лошица"
-        ]
+        ],
+        "адрес" : "каменногорская"
       },
       "description" : [
         "дом сдан",

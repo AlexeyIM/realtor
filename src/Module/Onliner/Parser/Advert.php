@@ -3,8 +3,10 @@
 namespace Realtor\Module\Onliner\Parser;
 
 use PHPHtmlParser\Dom;
+use PHPHtmlParser\Dom\HtmlNode;
 use Realtor\Parser\AdvertParserInterface;
 use Realtor\Advert\Advert as AdvertObject;
+use Realtor\Utils\String;
 
 /**
  * Class Advert
@@ -40,18 +42,23 @@ class Advert implements AdvertParserInterface
         $advertDom = new Dom;
         $advertDom->loadFromUrl($url);
 
+        $thumbsWrapper = $advertDom->find('.apartment-cover__thumbnails-inner');
+        if ($thumbsWrapper->count() > 0) {
+            $this->checkImageCount($thumbsWrapper[0]);
+        }
+
         $stopWords = $this->rules['stop_words']['description'];
         $body = $advertDom->find('.arenda-apartment', 0);
-        $description = $this->strToLower(strip_tags($body->innerhtml));
+        $description = String::strToLower(strip_tags($body->innerhtml));
 
-        if ($word = $this->findWordsInString($description, $stopWords)) {
-            $message = sprintf('"%s" stop word has been found in the description', $word);
+        if ($word = String::findWordsInString($description, $stopWords)) {
+            $message = sprintf(self::ERROR_STOP_WORD_FOUND, $word);
             throw new \Exception($message);
         }
 
         preg_match('/(\d{4}) года/u', $description, $matches);
         if (isset($matches[1]) && $matches[1] < $this->rules['min_year']) {
-            $message = sprintf('"%s" is a wrong year', $matches[1]);
+            $message = sprintf(self::ERROR_WRONG_YEAR, $matches[1]);
             throw new \Exception($message);
         }
 
@@ -64,45 +71,17 @@ class Advert implements AdvertParserInterface
     }
 
     /**
-     * Returns founded word, otherwise false
+     * Returns true if check was passed
      *
-     * @param string $haystack
-     * @param string|array $needle
-     * @return string|false
+     * @param HtmlNode $node
      * @throws \Exception
      */
-    private function findWordsInString($haystack, $needle)
+    protected function checkImageCount(HtmlNode $node)
     {
-        $result = false;
-
-        if (is_string($needle)) {
-            if (strpos($haystack, $needle) !== false) {
-                $result = $needle;
-            }
-        } elseif (is_array($needle)) {
-            foreach ($needle as $word) {
-                if (strpos($haystack, $word) !== false) {
-                    $result = $word;
-                    break;
-                }
-            }
-        } else {
-            throw new \Exception('Wrong <neelde> type for word search');
+        $count = $node->find('.apartment-cover__thumbnail')->count();
+        if ($count < $this->rules['onliner']['min_photo_count']) {
+            $message = sprintf(self::ERROR_NOT_ENOUGH_PHOTOS, $count);
+            throw new \Exception($message);
         }
-
-        return $result;
-    }
-
-    /**
-     * Converts case for non-latin symbols
-     *
-     * @param string $input
-     * @return string
-     */
-    private function strToLower($input)
-    {
-        $outputString = mb_convert_case($input, MB_CASE_LOWER, 'UTF-8') . '';
-
-        return $outputString;
     }
 }

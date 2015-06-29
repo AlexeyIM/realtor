@@ -11,6 +11,8 @@ use PHPHtmlParser\Dom;
  */
 class Listing implements ParserInsterface
 {
+    const CANT_FIND_ADVERTS = 'Can\'t find any adverts on the page';
+
     /**
      * Returns number of pages based on paginator page element
      *
@@ -30,7 +32,7 @@ class Listing implements ParserInsterface
         }
 
         if (!isset($urlList)) {
-            throw new \Exception('Can\'t find any adverts on the page');
+            throw new \Exception(self::CANT_FIND_ADVERTS);
         }
 
         return $urlList;

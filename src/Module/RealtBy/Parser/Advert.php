@@ -6,6 +6,7 @@ use PHPHtmlParser\Dom;
 use PHPHtmlParser\Dom\HtmlNode;
 use Realtor\Parser\AdvertParserInterface;
 use Realtor\Advert\Advert as AdvertObject;
+use Realtor\Utils\String;
 
 /**
  * Class Advert
@@ -70,10 +71,10 @@ class Advert implements AdvertParserInterface
     protected function checkDescription(HtmlNode $node)
     {
         $stopWords = $this->rules['stop_words']['description'];
-        $description = $this->strToLower(strip_tags($node->innerhtml));
+        $description = String::strToLower(strip_tags($node->innerhtml));
 
-        if ($word = $this->findWordsInString($description, $stopWords)) {
-            $message = sprintf('"%s" stop word has been found in the description', $word);
+        if ($word = String::findWordsInString($description, $stopWords)) {
+            $message = sprintf(self::ERROR_STOP_WORD_FOUND, $word);
             throw new \Exception($message);
         }
     }
@@ -86,8 +87,10 @@ class Advert implements AdvertParserInterface
      */
     protected function checkImageCount(HtmlNode $node)
     {
-        if ($node->find('#thumbs img')->count() < $this->rules['min_photo_count']) {
-            throw new \Exception('Not enough photos');
+        $count = $node->find('#thumbs img')->count();
+        if ($count < $this->rules['realtby']['min_photo_count']) {
+            $message = sprintf(self::ERROR_NOT_ENOUGH_PHOTOS, $count);
+            throw new \Exception($message);
         }
     }
 
@@ -105,62 +108,19 @@ class Advert implements AdvertParserInterface
         foreach ($node->find('tr') as $option) {
             /** @var \PHPHtmlParser\Dom\Collection $suboptions */
             $suboptions = $option->find('td');
-            if (!$suboptions->count()) {
+            if ($suboptions->count() < 2) {
                 continue;
             }
 
             list($titleNode, $valueNode) = $suboptions->toArray();
-            $title = trim($this->strToLower($titleNode->text));
-            $value = trim($this->strToLower(strip_tags($valueNode->innerHtml)));
+            $title = trim(String::strToLower($titleNode->text));
+            $value = trim(String::strToLower(strip_tags($valueNode->innerHtml)));
             if (!empty($stopWords[$title])) {
-                if ($word = $this->findWordsInString($value, $stopWords[$title])) {
-                    $message = sprintf('"%s" stop word has been found in "%s" field', $word, $title);
+                if ($word = String::findWordsInString($value, $stopWords[$title])) {
+                    $message = sprintf(self::ERROR_STOP_WORD_IN_FIELD_FOUND, $word, $title);
                     throw new \Exception($message);
                 }
             }
         }
-    }
-
-    /**
-     * Returns founded word, otherwise false
-     *
-     * @param string $haystack
-     * @param string|array $needle
-     * @return string|false
-     * @throws \Exception
-     */
-    private function findWordsInString($haystack, $needle)
-    {
-        $result = false;
-
-        if (is_string($needle)) {
-            if (strpos($haystack, $needle) !== false) {
-                $result = $needle;
-            }
-        } elseif (is_array($needle)) {
-            foreach ($needle as $word) {
-                if (strpos($haystack, $word) !== false) {
-                    $result = $word;
-                    break;
-                }
-            }
-        } else {
-            throw new \Exception('Wrong <neelde> type for word search');
-        }
-
-        return $result;
-    }
-
-    /**
-     * Converts case for non-latin symbols
-     *
-     * @param string $input
-     * @return string
-     */
-    private function strToLower($input)
-    {
-        $outputString = mb_convert_case($input, MB_CASE_LOWER, 'UTF-8') . '';
-
-        return $outputString;
     }
 }
