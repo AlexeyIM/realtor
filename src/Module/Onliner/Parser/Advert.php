@@ -125,6 +125,7 @@ class Advert implements AdvertParserInterface
      */
     protected function checkTitle($title, $stopWords)
     {
+        $title = String::strToLower($title);
         if ($word = String::findWordsInString($title, $stopWords)) {
             $message = sprintf(self::ERROR_STOP_WORD_IN_FIELD_FOUND, $word, 'title');
             throw new \Exception($message);
