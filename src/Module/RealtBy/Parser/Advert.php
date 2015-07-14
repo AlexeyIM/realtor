@@ -42,31 +42,28 @@ class Advert implements AdvertParserInterface
         $advertDom = new Dom;
         $advertDom->loadFromUrl($url);
 
-        $description = $advertDom->find('#content .description');
+        $description = $advertDom->find('.text-12');
         if ($description->count()) {
             $this->checkDescription($description[0]);
         }
 
-        $tables = $advertDom->find('table.object-view');
-
-        foreach ($tables as $table) {
-            $this->checkParameters($table);
-        }
-
-        $thumbs = $advertDom->find('table.object-view #thumbs');
+        $thumbs = $advertDom->find('.photos');
         if ($thumbs->count()) {
             $this->checkImageCount($thumbs[0]);
         }
 
+        $content = $advertDom->find('.inner-center-content', 0);
+        $this->checkParameters($content);
+
         $titleOblect = $advertDom->find('title', 0);
         $title = $titleOblect ? $titleOblect->text : 'no title';
 
-        $content = $advertDom->find('#content', 0);
-        $pricePerMeter = $this->parsePricePerMeter($content);
+        $rawPrice = $advertDom->find('.price-switchable', 0);
+        $price = $this->parsePrice($rawPrice);
 
         $advert = new AdvertObject();
         $advert->setTitle($title)
-            ->setPricePerMeter($pricePerMeter);
+            ->setPrice($price);
         return $advert;
     }
 
@@ -76,14 +73,12 @@ class Advert implements AdvertParserInterface
      * @param HtmlNode $node
      * @return int
      */
-    protected function parsePricePerMeter(HtmlNode $node)
+    protected function parsePrice(HtmlNode $node)
     {
-        $text = String::strToLower(strip_tags($node->innerhtml));
-        $text = str_replace('&nbsp;', ' ', $text);
-        preg_match('/, ([\d\s]+) \$ за м/u', $text, $matches);
-        $pricePerMeter = isset($matches[1]) ? str_replace(' ', '', $matches[1]) : 0;
+        $value = $node->getAttribute('data-0');
+        $value = str_replace(array('&amp;nbsp;', '$'), '', $value);
 
-        return $pricePerMeter;
+        return $value;
     }
 
     /**
@@ -111,7 +106,7 @@ class Advert implements AdvertParserInterface
      */
     protected function checkImageCount(HtmlNode $node)
     {
-        $count = $node->find('img')->count();
+        $count = $node->find('.photo-item img')->count();
         if ($count < $this->rules['realtby']['min_photo_count']) {
             $message = sprintf(self::ERROR_NOT_ENOUGH_PHOTOS, $count);
             throw new \Exception($message);
@@ -129,7 +124,7 @@ class Advert implements AdvertParserInterface
         $stopWords = $this->rules['realtby']['parameters_stop_words'];
 
         /** @var \PHPHtmlParser\Dom\HtmlNode $option */
-        foreach ($node->find('tr') as $option) {
+        foreach ($node->find('tr.table-row') as $option) {
             /** @var \PHPHtmlParser\Dom\Collection $suboptions */
             $suboptions = $option->find('td');
             if ($suboptions->count() < 2) {

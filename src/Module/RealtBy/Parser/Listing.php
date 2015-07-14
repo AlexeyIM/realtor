@@ -24,7 +24,7 @@ class Listing implements ParserInsterface
     {
         $listingDom = new Dom;
         $listingDom->loadFromUrl($url);
-        $linkList = $listingDom->find('#photolist .row .thumb-frame a');
+        $linkList = $listingDom->find('.bd-table-item .bd-table-item-header .ad a');
 
         /** @var \PHPHtmlParser\Dom\HtmlNode $link */
         foreach ($linkList as $link) {

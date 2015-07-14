@@ -35,13 +35,14 @@ class LinkCollector extends AbstractProcessor
         $listingUrl = preg_replace('/(\%\d)/', '%$1', $config['realtby']['listing_mask']);
 
         $breadcrumbParser = new Breadcrumbs();
-        $pageCount = $breadcrumbParser->parsePage(sprintf($listingUrl, 1));
+        $pageCount = $breadcrumbParser->parsePage(sprintf($listingUrl, 0));
         $output->writeln('Pages found: ' . $pageCount);
 
         $links = [];
         $listingParser = new Listing();
         for ($i = 1; $i <= $pageCount; $i++) {
-            $parsedLinks = $listingParser->parsePage(sprintf($listingUrl, $i));
+            $pageUrl = sprintf($listingUrl, $i - 1);
+            $parsedLinks = $listingParser->parsePage($pageUrl);
             $links = array_merge($links, $parsedLinks);
             $output->writeln('Links found for page ' . $i . ' found: ' . count($parsedLinks));
         }

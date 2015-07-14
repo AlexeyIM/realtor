@@ -66,4 +66,26 @@ class Advert
     {
         return $this->pricePerMeter;
     }
+
+    /**
+     * Price setter
+     *
+     * @param int $price
+     * @return $this
+     */
+    public function setPrice($price)
+    {
+        $this->price = $price;
+        return $this;
+    }
+
+    /**
+     * Price getter
+     *
+     * @return int
+     */
+    public function getPrice()
+    {
+        return $this->price;
+    }
 }
