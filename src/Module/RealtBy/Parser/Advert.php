@@ -73,8 +73,12 @@ class Advert implements AdvertParserInterface
      * @param HtmlNode $node
      * @return int
      */
-    protected function parsePrice(HtmlNode $node)
+    protected function parsePrice($node)
     {
+        if (!$node instanceof HtmlNode) {
+            return 0;
+        }
+
         $value = $node->getAttribute('data-0');
         $value = str_replace(array('&amp;nbsp;', '$'), '', $value);
 
@@ -119,8 +123,12 @@ class Advert implements AdvertParserInterface
      * @param HtmlNode $node
      * @throws \Exception
      */
-    protected function checkParameters(HtmlNode $node)
+    protected function checkParameters($node)
     {
+        if (!$node instanceof HtmlNode) {
+            return;
+        }
+
         $stopWords = $this->rules['realtby']['parameters_stop_words'];
 
         /** @var \PHPHtmlParser\Dom\HtmlNode $option */
