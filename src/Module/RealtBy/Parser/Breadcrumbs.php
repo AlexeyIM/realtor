@@ -26,7 +26,7 @@ class Breadcrumbs implements ParserInsterface
         $listingDom->loadFromUrl($url);
 
         /** @var \PHPHtmlParser\Dom\Collection $pageLinks */
-        $pageLinks = $listingDom->find('.uni-paging span a');
+        $pageLinks = $listingDom->find('.uni-paging a');
 
         $numberOfPages = $pageLinks->offsetGet($pageLinks->count() - 1)->text;
 
